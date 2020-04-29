@@ -136,7 +136,7 @@
                         <!--允许移动生成的文件-->
                         <verbose>true</verbose>
                         <!--允许自动覆盖的文件-->
-                        <overwrite>true</overwrite>
+                        <overwrite>false</overwrite>
                         <configurationFile>
                             src/main/resources/mybatis-generator.xml
                         </configurationFile>
@@ -149,8 +149,8 @@
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-compiler-plugin</artifactId>
                 <configuration>
-                    <source>14</source>
-                    <target>14</target>
+                    <source>13</source>
+                    <target>13</target>
                 </configuration>
             </plugin>
         </plugins>

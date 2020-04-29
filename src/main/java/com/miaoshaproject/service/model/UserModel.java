@@ -13,7 +13,7 @@ public class UserModel {
     private Byte  gender;
     @NotNull(message = "年龄必须填写")
     @Min(value = 0, message = "年龄必须大于0")
-    @Max(value = 150, message = "年龄必须小于150")
+    @Max(value = 120, message = "年龄必须小于120")
     private Byte age;
     @NotBlank(message = "手机号不能为空")
     private String telphone;

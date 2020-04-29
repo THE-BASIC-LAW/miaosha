@@ -56,9 +56,9 @@ public class UserController extends BaseController {
     public CommonReturnType register(@RequestParam(name="telphone")String telphone,
                                      @RequestParam(name="otpCode")String otpCode,
                                      @RequestParam(name="name")String name,
-                                     @RequestParam(name="gender")Byte gender,
+                                     @RequestParam(name="gender")Integer gender,
                                      @RequestParam(name="password")String password,
-                                     @RequestParam(name="age")Byte age) throws BusinessException, UnsupportedEncodingException, NoSuchAlgorithmException {
+                                     @RequestParam(name="age")Integer age) throws BusinessException, UnsupportedEncodingException, NoSuchAlgorithmException {
         //验证手机号和对应的otpcode相符合
 //        String inSessionOtpCode = (String) this.httpServletRequest.getSession().getAttribute(telphone);
 //        if(!com.alibaba.druid.util.StringUtils.equals(otpCode,inSessionOtpCode)){
@@ -67,8 +67,8 @@ public class UserController extends BaseController {
         //用户注册流程
         UserModel userModel = new UserModel();
         userModel.setName(name);
-        userModel.setGender(gender);
-        userModel.setAge(age);
+        userModel.setGender(Byte.valueOf(String.valueOf(gender.intValue())));
+        userModel.setAge(Byte.valueOf(String.valueOf(age.intValue())));
         userModel.setTelphone(telphone);
         userModel.setRegisterMode("byphone");
         userModel.setEncryptPassword(this.EncodeByMd5(password));
