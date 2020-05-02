@@ -9,6 +9,7 @@ import com.miaoshaproject.service.model.UserModel;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 
@@ -18,6 +19,8 @@ import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.Base64;
 import java.util.Random;
+import java.util.UUID;
+import java.util.concurrent.TimeUnit;
 
 @Controller("user")
 @RequestMapping("/user")
@@ -29,6 +32,9 @@ public class UserController extends BaseController {
 
     @Autowired
     private HttpServletRequest httpServletRequest;
+
+    @Autowired
+    private RedisTemplate redisTemplate;
 
     //用户登录接口
     @RequestMapping(value = "/login", method = {RequestMethod.POST}, consumes = {CONTENT_TYPE_FORMED})
@@ -43,9 +49,21 @@ public class UserController extends BaseController {
         UserModel userModel = userService.validateLogin(telphone,this.EncodeByMd5(password));
 
         //讲登录凭证加入到用户登录成功的session内
-        this.httpServletRequest.getSession().setAttribute("IS_LOGIN",true);
-        this.httpServletRequest.getSession().setAttribute("LOGIN_USER",userModel);
-        return CommonReturnType.create(null);
+//        this.httpServletRequest.getSession().setAttribute("IS_LOGIN",true);
+//        this.httpServletRequest.getSession().setAttribute("LOGIN_USER",userModel);
+
+        //修改成若用户登录验证车公共后将对应的登录信息和登录凭证一起存入redis中
+
+        //生成登录凭证token，UUID
+        String uuidToken = UUID.randomUUID().toString();
+        uuidToken = uuidToken.replace("-", "");
+
+        //建立token和用户登录态之间的联系
+        redisTemplate.opsForValue().set(uuidToken, userModel);
+        redisTemplate.expire(uuidToken,1, TimeUnit.HOURS);
+
+        //下发token
+        return CommonReturnType.create(uuidToken);
     }
 
     //用户注册接口
@@ -58,10 +76,10 @@ public class UserController extends BaseController {
                                      @RequestParam(name="password")String password,
                                      @RequestParam(name="age")Integer age) throws BusinessException, UnsupportedEncodingException, NoSuchAlgorithmException {
         //验证手机号和对应的otpcode相符合
-//        String inSessionOtpCode = (String) this.httpServletRequest.getSession().getAttribute(telphone);
-//        if(!com.alibaba.druid.util.StringUtils.equals(otpCode,inSessionOtpCode)){
-//            throw new BusinessException(EmBusinessError.PARAMETER_VALIDATION_ERROR.setErrMsg("短信验证码错误"));
-//        }
+        String inSessionOtpCode = (String) this.httpServletRequest.getSession().getAttribute(telphone);
+        if(!com.alibaba.druid.util.StringUtils.equals(otpCode,inSessionOtpCode)){
+            throw new BusinessException(EmBusinessError.PARAMETER_VALIDATION_ERROR.setErrMsg("短信验证码错误"));
+        }
         //用户注册流程
         UserModel userModel = new UserModel();
         userModel.setName(name);

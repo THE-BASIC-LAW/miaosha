@@ -110,7 +110,7 @@
   </update>
   <update id="decreaseStock">
     update item_stock
-    set stock = stock - #{amout},
+    set stock = stock - #{amount}
     where item_id = #{itemId} and stock >= #{amount}
   </update>
   <update id="updateByPrimaryKey" parameterType="com.miaoshaproject.dataobject.ItemStockDO">

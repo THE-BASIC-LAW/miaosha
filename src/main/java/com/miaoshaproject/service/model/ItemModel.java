@@ -3,9 +3,10 @@ package com.miaoshaproject.service.model;
 import javax.validation.constraints.Min;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
+import java.io.Serializable;
 import java.math.BigDecimal;
 
-public class ItemModel {
+public class ItemModel implements Serializable {
 
     private Integer id;
 
@@ -31,6 +32,17 @@ public class ItemModel {
     //商品图片链接
     @NotBlank(message = "商品图片不能为空")
     private String imageUrl;
+
+    //使用聚合模型，如果promoModel不为空，则表示其还用手还未结束的秒杀活动
+    private PromoModel promoModel;
+
+    public PromoModel getPromoModel() {
+        return promoModel;
+    }
+
+    public void setPromoModel(PromoModel promoModel) {
+        this.promoModel = promoModel;
+    }
 
     public Integer getId() {
         return id;
